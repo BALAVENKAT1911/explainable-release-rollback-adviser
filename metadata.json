@@ -1,0 +1,6 @@
+{
+  "name": "Explainable Release Rollback Adviser",
+  "description": "An advisory system for regulated enterprises to quantify release risk and provide explainable rollback recommendations.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
