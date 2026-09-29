@@ -26,6 +26,8 @@ export default function ReleasesPage() {
   const [phaseFilter, setPhaseFilter] = useState('ALL');
   const [recFilter, setRecFilter] = useState('ALL');
   const [criticalityFilter, setCriticalityFilter] = useState('ALL');
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 25;
 
   useEffect(() => {
     let ignore = false;
@@ -60,6 +62,9 @@ export default function ReleasesPage() {
     }
     return true;
   });
+
+  const totalPages = Math.ceil(filteredReleases.length / pageSize) || 1;
+  const paginatedReleases = filteredReleases.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   const isPartner = role === 'External Partner';
 
@@ -177,7 +182,7 @@ export default function ReleasesPage() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-xs">
-                {filteredReleases.map(r => {
+                {paginatedReleases.map(r => {
                   const phaseDisplay: Record<string, { label: string; color: string }> = {
                     'canary_5': { label: 'Canary 5%', color: 'bg-purple-100 text-purple-700 border-purple-200' },
                     'canary_25': { label: 'Canary 25%', color: 'bg-blue-100 text-blue-700 border-blue-200' },
@@ -328,6 +333,41 @@ export default function ReleasesPage() {
               </tbody>
             </table>
           </div>
+
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div className="px-6 py-4 border-t border-slate-200/80 bg-slate-50/60 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+              <span className="text-slate-500 font-medium">
+                Showing Page <strong className="text-slate-800">{currentPage}</strong> of <strong className="text-slate-800">{totalPages}</strong> ({filteredReleases.length} releases)
+              </span>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  className="px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-slate-700 font-semibold hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed shadow-sm transition-colors"
+                >
+                  Previous
+                </button>
+
+                <div className="flex items-center gap-1 font-mono text-xs font-bold text-slate-700">
+                  <span className="px-2 py-1 bg-indigo-600 text-white rounded-md">
+                    {currentPage}
+                  </span>
+                  <span>/</span>
+                  <span>{totalPages}</span>
+                </div>
+
+                <button
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                  className="px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-slate-700 font-semibold hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed shadow-sm transition-colors"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
       </div>

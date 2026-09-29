@@ -12,7 +12,8 @@ import {
   ShieldCheck,
   Building2,
   UserCheck,
-  Lock
+  Lock,
+  Play
 } from 'lucide-react';
 import { useAppContext } from './AppContext';
 import { UserRole, Organization } from '@/lib/models';
@@ -25,7 +26,8 @@ export function Navigation() {
     { href: '/', label: 'Dashboard', icon: LayoutDashboard },
     { href: '/releases', label: 'Release Analysis', icon: FileBarChart },
     { href: '/audit', label: 'Decision Ledger', icon: History, badge: 'Verified' },
-    { href: '/experiments', label: 'Experiments & Benchmarks', icon: Beaker },
+    { href: '/demo', label: 'Demo Suite', icon: Play, badge: 'Live' },
+    { href: '/experiments', label: 'Experiments', icon: Beaker },
     { href: '/failure-cases', label: 'Failure Modes (5)', icon: ShieldAlert },
     { href: '/docs', label: 'Compliance Docs', icon: HelpCircle },
   ];

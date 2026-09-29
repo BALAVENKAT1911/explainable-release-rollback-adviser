@@ -283,6 +283,15 @@ export default function ReleaseAnalysis() {
                 <span>{advancingPhase ? 'Advancing...' : 'Advance Phase'}</span>
               </button>
             )}
+
+            {/* Compliance Evidence Certificate */}
+            <Link
+              href={`/releases/${release.release_id}/evidence`}
+              className="px-3 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1 shadow-sm"
+            >
+              <FileText size={13} />
+              <span>Evidence Certificate</span>
+            </Link>
           </div>
         </div>
 

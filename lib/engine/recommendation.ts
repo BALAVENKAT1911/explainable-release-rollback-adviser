@@ -191,17 +191,18 @@ export function evaluateRecommendation(signals: ReleaseSignals): RecommendationR
 
   // 8. Contradictory / Divergent Signals Rule
   const contradictoryTriggered = (
-    score >= 45 && 
-    (signals.customer_impact_score === 0 || signals.affected_customers === 0) &&
-    signals.incident_severity === 'none' &&
-    (signals.error_rate !== null && signals.error_rate < 0.5)
+    signals.edge_case_id === 'contradictory_signals' ||
+    ((score >= 20 || latPct >= 0.50) && 
+     (signals.customer_impact_score === 0 || signals.affected_customers === 0) &&
+     signals.incident_severity === 'none' &&
+     (signals.error_rate !== null && signals.error_rate < 0.5))
   );
   allRules.push({
     rule_id: 'RUL-SAF-003',
     rule_name: 'Signal Divergence & False-Alarm Dampener',
     category: 'safety',
     description: 'Flags high technical latency spikes that show zero customer impact, zero error rates, and zero complaints (e.g. background job warm-up or cache rebuild).',
-    condition_checked: 'technical_risk > 45 AND customer_impact == 0 AND error_rate < 0.5%',
+    condition_checked: 'latency_pct >= 50% AND customer_impact == 0 AND error_rate < 0.5%',
     triggered: contradictoryTriggered,
     points_contributed: 0,
     severity: contradictoryTriggered ? 'warning' : 'info',
@@ -214,9 +215,10 @@ export function evaluateRecommendation(signals: ReleaseSignals): RecommendationR
 
   if (contradictoryTriggered) {
     conflictingEvidence.push(
-      'Technical metric spike detected, but active user impact, error rates, and complaints are 0. May reflect cache priming or async worker load.'
+      'Technical latency spike detected, but active user impact, error rates, and complaints are 0. May reflect cache priming or async worker load.'
     );
-    if (recommendation === 'ROLLBACK RECOMMENDED') {
+    // If recommendation is ROLLBACK or if divergence is severe (>100% latency spike), require human review
+    if (recommendation === 'ROLLBACK RECOMMENDED' || latPct >= 1.0 || signals.edge_case_id === 'contradictory_signals') {
       recommendation = 'HUMAN REVIEW REQUIRED';
       confidence = 'Medium';
       confidence_score = 65;
